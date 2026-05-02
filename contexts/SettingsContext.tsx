@@ -1,26 +1,32 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 
 type Settings = {
-  language: 'English' | 'Filipino';
+  language: "English" | "Filipino";
   avatarColor: string;
   mockDataEnabled: boolean;
 };
 
 type SettingsContextValue = {
   settings: Settings;
-  setLanguage: (language: Settings['language']) => void;
+  setLanguage: (language: Settings["language"]) => void;
   setAvatarColor: (color: string) => void;
   setMockDataEnabled: (enabled: boolean) => void;
 };
 
 const DEFAULT_SETTINGS: Settings = {
-  language: 'English',
-  avatarColor: '#638cff',
+  language: "English",
+  avatarColor: "#638cff",
   mockDataEnabled: false,
 };
 
-const STORAGE_KEY = 'serbisure.settings';
+const STORAGE_KEY = "serbisure.settings";
 
 const SettingsContext = createContext<SettingsContextValue>({
   settings: DEFAULT_SETTINGS,
@@ -29,7 +35,9 @@ const SettingsContext = createContext<SettingsContextValue>({
   setMockDataEnabled: () => {},
 });
 
-export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
@@ -38,11 +46,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const raw = await AsyncStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          // Force mock data off for testing new user state
-          setSettings(prev => ({ ...prev, ...parsed, mockDataEnabled: false }));
+          setSettings((prev) => ({ ...prev, ...parsed }));
         }
       } catch (error) {
-        console.warn('Failed to load settings', error);
+        console.warn("Failed to load settings", error);
       }
     };
     load();
@@ -53,18 +60,24 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       try {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
       } catch (error) {
-        console.warn('Failed to persist settings', error);
+        console.warn("Failed to persist settings", error);
       }
     };
     persist();
   }, [settings]);
 
-  const value = useMemo(() => ({
-    settings,
-    setLanguage: (language: Settings['language']) => setSettings(prev => ({ ...prev, language })),
-    setAvatarColor: (color: string) => setSettings(prev => ({ ...prev, avatarColor: color })),
-    setMockDataEnabled: (enabled: boolean) => setSettings(prev => ({ ...prev, mockDataEnabled: enabled })),
-  }), [settings]);
+  const value = useMemo(
+    () => ({
+      settings,
+      setLanguage: (language: Settings["language"]) =>
+        setSettings((prev) => ({ ...prev, language })),
+      setAvatarColor: (color: string) =>
+        setSettings((prev) => ({ ...prev, avatarColor: color })),
+      setMockDataEnabled: (enabled: boolean) =>
+        setSettings((prev) => ({ ...prev, mockDataEnabled: enabled })),
+    }),
+    [settings],
+  );
 
   return (
     <SettingsContext.Provider value={value}>
