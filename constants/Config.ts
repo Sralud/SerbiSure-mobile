@@ -5,7 +5,7 @@ export const API_CONFIG = {
   // For iOS Simulator use localhost or 127.0.0.1
   // For Physical Device use your machine's local IP address (e.g., 192.168.1.xxx)
   BASE_URL: "http://[IP ADDRESS NIMO]:8001", // <--- Updated to use new port 8001!
-  WEB_URL: "http://127.0.0.1:8000", // For web browser testing
+  WEB_URL: "http://[IP ADDRESS NIMO]:8001", // For web browser testing
   PROD_URL: "https://serbisure-backend.vercel.app",
 };
 
